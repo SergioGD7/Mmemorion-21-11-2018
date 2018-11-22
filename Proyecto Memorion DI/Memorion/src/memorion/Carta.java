@@ -10,6 +10,7 @@ package memorion;
  * @author Sergio
  */
 import java.awt.Image;
+import java.awt.event.ActionEvent;
 import java.net.URL;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
@@ -24,35 +25,38 @@ public class Carta extends JButton{
     private boolean volteada=false;
     private ImageIcon imagenDorso;
     private ImageIcon imagenFrontal;
-    private Image image;
+    private Image imagetrasera,imagefrontal;
     private ControladorMenu controladorMenu;
     private int indice;
     private String[] imagenes={"lazarillo1.jpg","lazarillo2.jpg"};
     
     public Carta(ControladorMenu controladorMenu,int indice){
-        URL url=getClass().getResource("trasera.png");
+        /*URL url=getClass().getResource("trasera.png");
         imagenDorso=new ImageIcon(url);
         image = imagenDorso.getImage();
-        //image = image.getScaledInstance(image.getWidth(null)/2, image.getHeight(null)/2, Image.SCALE_SMOOTH);
-        imagenDorso.setImage(image);
-        añadirImagenFrontal();
+        //Dimension tamaño=this.getSize();
+        //image = image.getScaledInstance(tamaño.getWidth(),tamaño.getHeight(), Image.SCALE_SMOOTH);
+        imagenDorso.setImage(image);*/
+        reescalarImagen(400,336);
+        añadirImagenFrontal(400,366);
         establecerIcono();
         System.out.println(getIcon().toString());
         this.controladorMenu=controladorMenu;
         this.indice=indice;
         addActionListener(controladorMenu);
     }
-    public void añadirImagenFrontal(){
+    public void añadirImagenFrontal(int x,int y){
         URL url=getClass().getResource(imagenes[(int) (Math.random() * 2)]);
         imagenFrontal=new ImageIcon(url);
+        imagefrontal = imagenFrontal.getImage();
+        imagefrontal = imagefrontal.getScaledInstance(x, y, Image.SCALE_SMOOTH);
     } 
     public String imagenActual() {
         System.out.println("Nombre icono: "+getIcon().toString());
         return getIcon().toString();
         
     }
-    
-    
+
     public void voltear(){
         if(getIcon().equals(imagenDorso)){
             setIcon(imagenFrontal);
@@ -116,6 +120,14 @@ public class Carta extends JButton{
 
     public void setVolteada(boolean volteada) {
         this.volteada = volteada;
+    }
+    
+    public void reescalarImagen(int x,int y){
+        URL url=getClass().getResource("trasera.png");
+        imagenDorso=new ImageIcon(url);
+        imagetrasera = imagenDorso.getImage();
+        imagetrasera = imagetrasera.getScaledInstance(x, y, Image.SCALE_SMOOTH);
+        imagenDorso.setImage(imagetrasera);
     }
     
 }
