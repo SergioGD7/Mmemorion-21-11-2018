@@ -1,0 +1,145 @@
+/*
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
+ * and open the template in the editor.
+ */
+package memorion;
+
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
+import java.awt.event.WindowListener;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.swing.JOptionPane;
+import javax.swing.Timer;
+
+/**
+ *
+ * @author Sergio
+ */
+public class ControladorMenu extends WindowAdapter implements ActionListener{
+
+    private Carta carta1 = null;
+    private Carta carta2 = null;
+    private Vista vista;
+    Carta cartas;
+    private Timer t;
+
+    public ControladorMenu(Vista vista) {
+        this.vista = vista;
+    }
+
+    @Override
+    public void actionPerformed(ActionEvent ae) {
+        System.out.println(ae.getActionCommand());
+        switch (ae.getActionCommand()) {
+            case "Easy":
+                if (vista.existeContador()) {
+                    vista.estadoContador(true);
+                    vista.restablecerContador();
+                    vista.restablecerJugadas();
+                } else {
+                    vista.crearContador();
+                }
+                vista.crearCartas(3, 4);
+                break;
+            case "Normal":
+                if (vista.existeContador()) {
+                    vista.estadoContador(true);
+                    vista.restablecerContador();
+                    vista.restablecerJugadas();
+                } else {
+                    vista.crearContador();
+                }
+                vista.crearCartas(4, 5);
+                break;
+            case "Difficult":
+                if (vista.existeContador()) {
+                    vista.estadoContador(true);
+                    vista.restablecerContador();
+                    vista.restablecerJugadas();
+                } else {
+                    vista.crearContador();
+                }
+                vista.crearCartas(5, 6);
+                break;
+            case "": {
+                voltearCartas(ae);
+                break;
+            }
+            default:
+                System.out.println("Ha habido un problema");
+        }
+    }
+            
+    public void voltearCartas(ActionEvent ae) {
+        if (carta1 == null) {
+            carta1 = (Carta) ae.getSource();
+            if (!carta1.isVolteada()) {
+                carta1.voltear();
+                carta1.setVolteada(true);
+            }
+            /*
+                
+                Enlace transicion:
+                http://www.jc-mouse.net/java/crea-un-efecto-flip-en-java-swing
+                Enlace imagenes Lazarillo:
+                https://sites.google.com/site/luisrc3blit/imagenes
+             */
+
+        } else {
+            carta2 = (Carta) ae.getSource();
+            if (!carta2.isVolteada()) {
+
+                //carta2.repaint();
+                carta2.voltear();
+                carta2.setVolteada(true);
+                comprobarCartasIguales();
+
+            }
+        }
+    }
+
+    public void comprobarCartasIguales() {
+        t = new Timer(500, new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent ae) {
+                if (!carta1.imagenActual().equals(carta2.imagenActual())) {
+                    carta1.voltear();
+                    carta1.setVolteada(false);
+                    carta2.voltear();
+                    carta2.setVolteada(false);
+                } else {
+                    carta1 = null;
+                    carta2 = null;
+                    if (vista.partidaAcabada()) {
+                        System.out.println("Game finished");
+                        vista.estadoContador(false);
+                        JOptionPane.showMessageDialog(null, "Game finished!!");
+                        int resguardar=JOptionPane.showConfirmDialog(null, "Do you want to save your score?","Save?",JOptionPane.YES_NO_OPTION);
+                        if(resguardar == JOptionPane.YES_OPTION){
+                            String nombreusuario=JOptionPane.showInputDialog(null, "Enter your name");
+                        }
+                        vista.setVisible(false);
+                        VistaRanking ranking=new VistaRanking();
+                    }
+                }
+                vista.sumarJugadas();
+                carta1 = null;
+                carta2 = null;
+            }
+        });
+        t.start();
+        t.setRepeats(false);
+       
+    }
+
+   
+    @Override
+    public void windowClosing(WindowEvent we) {
+        vista.cerrarAplicacion();
+    }
+    
+}
